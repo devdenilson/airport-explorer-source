@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CsvHelper;
 using CsvHelper.Configuration;
@@ -48,7 +49,11 @@ namespace AirportExplorer.Pages
 
                     featureCollection.Features.Add(new Feature(
                         new Point(new Position(latitude, longitude)),
-                        new {Name = name, IataCode = iataCode}));
+                        new Dictionary<string, object>
+                        {
+                            {"name", name},
+                            {"iataCode", iataCode}
+                        }));
                 }
 
                 return new JsonResult(featureCollection);
