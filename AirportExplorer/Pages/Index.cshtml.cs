@@ -93,8 +93,8 @@ namespace AirportExplorer.Pages
             // Get the first result
             var nearbyResult = searchResponse.Results.FirstOrDefault();
             string placeId = nearbyResult.PlaceId;
-            string photoReference = nearbyResult.Photos.FirstOrDefault()?.PhotoReference;
-            string photoCredit = nearbyResult.Photos.FirstOrDefault()?.HtmlAttributions.FirstOrDefault();
+            string photoReference = nearbyResult.Photos?.FirstOrDefault()?.PhotoReference;
+            string photoCredit = nearbyResult.Photos?.FirstOrDefault()?.HtmlAttributions.FirstOrDefault();
 
             // Execute the details request
             var detailsResonse = await GooglePlaces.Details.QueryAsync(new PlacesDetailsRequest
