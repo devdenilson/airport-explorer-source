@@ -51,9 +51,11 @@
 <script>
     mapboxgl.accessToken = '@Model.MapboxAccessToken';
     var map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/light-v9'
-    });
+        container: 'map', 
+        style: 'mapbox://styles/mapbox/light-v9', 
+        center: [@Model.InitialLongitude, @Model.InitialLatitude], // starting position [lng, lat]
+        zoom: @Model.InitialZoom // starting zoom
+    }); 
 
     var nav = new mapboxgl.NavigationControl();
     map.addControl(nav, 'bottom-right');

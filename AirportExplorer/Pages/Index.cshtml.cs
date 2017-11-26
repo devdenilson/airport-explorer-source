@@ -13,6 +13,7 @@ using GoogleApi.Entities.Common.Enums;
 using GoogleApi.Entities.Places.Details.Request;
 using GoogleApi.Entities.Places.Photos.Request;
 using GoogleApi.Entities.Places.Search.NearBy.Request;
+using MaxMind.GeoIP2;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -26,6 +27,10 @@ namespace AirportExplorer.Pages
         public string MapboxAccessToken { get; }
         public string GoogleApiKey { get; }
 
+        public double InitialLatitude { get; set; } = 0;
+        public double InitialLongitude { get; set; } = 0;
+        public int InitialZoom { get; set; } = 1;
+
         public IndexModel(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
         {
             _hostingEnvironment = hostingEnvironment;
@@ -36,6 +41,29 @@ namespace AirportExplorer.Pages
 
         public void OnGet()
         {
+            try
+            {
+                using (var reader = new DatabaseReader(_hostingEnvironment.WebRootPath + "\\GeoLite2-City.mmdb"))
+                {
+                    // Determine the IP Address of the request
+                    var ipAddress = HttpContext.Connection.RemoteIpAddress;
+                    // Get the city from the IP Address
+                    var city = reader.City(ipAddress);
+
+                    if (city?.Location?.Latitude != null && city?.Location?.Longitude != null)
+                    {
+                        InitialLatitude = city.Location.Latitude.Value;
+                        InitialLongitude = city.Location.Longitude.Value;
+                        InitialZoom = 9;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                // Just suppress errors. If we could not retrieve the location for whatever reason
+                // there is not reason to notify the user. We'll just simply not know their current
+                // location and won't be able to center the map on it
+            }
         }
 
         public IActionResult OnGetAirports()

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,6 +30,15 @@ namespace AirportExplorer
         {
             if (env.IsDevelopment())
             {
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor,
+
+                    // IIS is also tagging a X-Forwarded-For header on, so we need to increase this limit, 
+                    // otherwise the X-Forwarded-For we are passing along from the browser will be ignored
+                    ForwardLimit = 2
+                });
+
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
             }
